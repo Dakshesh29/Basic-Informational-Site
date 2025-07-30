@@ -1,41 +1,28 @@
-const http = require("http");
-const fs = require("fs");
+const express = require("express");
+const path = require("path");
+const app = express();
 
-const server = http.createServer((req, res) => {
-  console.log(req.url, req.method);
-
-  res.setHeader("Content-Type", "text/html");
-
-  let path = "./views/";
-  switch (req.url) {
-    case "/":
-      path += "index.html";
-      res.statusCode = 200;
-      break;
-    case "/about":
-      path += "about.html";
-      res.statusCode = 200;
-      break;
-    case "/contact":
-      path += "contact.html";
-      res.statusCode = 200;
-      break;
-    default:
-      path += "404.html";
-      res.statusCode = 400;
-      break;
-  }
-
-  fs.readFile(path, (err, data) => {
-    if (err) {
-      console.log(err);
-      res.end("error");
-    } else {
-      res.end(data);
-    }
-  });
+app.get("/", (req, res) => {
+  console.log(req.method, req.url);
+  res.status(200).sendFile(path.join(__dirname, "views", "index.html"));
 });
 
-server.listen(3000, () => {
-  console.log("listening on port 3000");
+app.get("/about", (req, res) => {
+  console.log(req.method, req.url);
+  res.status(200).sendFile(path.join(__dirname, "views", "about.html"));
+});
+
+app.get("/contact", (req, res) => {
+  console.log(req.method, req.url);
+  res.status(200).sendFile(path.join(__dirname, "views", "contact.html"));
+});
+
+app.use((req, res) => {
+  console.log(req.method, req.url);
+  res.status(404).sendFile(path.join(__dirname, "views", "404.html"));
+});
+
+const PORT = 3000;
+app.listen(PORT, () => {
+  console.log(`Listening on port ${PORT}`);
 });
